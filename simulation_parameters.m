@@ -6,6 +6,9 @@
 global run
 run = 1
 
+global displayCorrelations
+displayCorrelations = 1
+
 % Sampling rate
 global dT
 dT = 0.1;
@@ -34,25 +37,24 @@ vy = 0;
 
 % Commanded rotation speed
 global yawrate
-yawrate = 0;
+yawrate = 0.1;
 
 % Process noise
 global xStd
-xStd = 0;
+xStd = 1e-9;
 global yStd
-yStd = 0;
+yStd = 1e-9;
 global yawStd
-yawStd = 0;
+yawStd = 1e-8;
 global vxStd
-vxStd = 0.05
+vxStd = 0.001;
 global vyStd
-vyStd = 0.05
-global yawRateStd
-yawRateStd = 0.01
+vyStd = 0.001;
+global yawrateStd
+yawrateStd = 0.001;
 
 global xMeasStd
 xMeasStd = 1;
-
 global yMeasStd
-zMeasStd = 1;
+yMeasStd = 1;
 
