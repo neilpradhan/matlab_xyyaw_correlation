@@ -27,7 +27,7 @@ P0 = 1e6*eye(3); % State covariance matrix
 X = X0;
 P = P0;
 
-firstIter = 0;
+iter = 0;
 
 % Motion "commands" (actual commands vx,vy,yawrate and driving noise xStd,
 % yStd, yawStd)
@@ -112,14 +112,23 @@ while (run)
     h = [h plot([X(1)+[0 dirLen*cos(X(3)+3*sqrt(P(3,3)))]], [X(2)+[0 dirLen*sin(X(3)+3*sqrt(P(3,3)))]],'b')];
     hold off
     drawnow;
-    %pause
     
     if displayCorrelations
         figure(2)
         imagesc(P)
+        title('Covariance matrix P')
         figure(1)
+
+        if iter == 0
+            disp('')
+            disp('')
+            disp('Make sure that the two figures are visible and do not overlap')
+            disp('Press ENTER to start continue')
+            pause
+        end
     end
     
+    iter = iter + 1;
 end
 
 
