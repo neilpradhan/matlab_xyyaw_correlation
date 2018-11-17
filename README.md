@@ -10,5 +10,5 @@ If you let the parameter displayCorrelations be set to 1 the simulation will dis
 ## Estimate yaw from x,y measurements
 Make sure that driveByPureNoise = 0 in EKF.m (line 46). This will command the robot to drive in a circle with radius 5m. Note that we can do this without knowing where we are. We just do not know where the circle will end up in the world. Run EKF and you will see how the position is found quite quickly and eventually also yaw. Once the filter has converged you will see that the yaw angle is well estimated all the time and that x and y will alternate to have the largest uncertainrty depending on the current heading. 
 
-## NOt able to estimate yaw from x,y measurements
+## Not able to estimate yaw from x,y measurements
 Make sure that driveByPureNoise = 1 in EKF.m (line 46). This will switch to a model where the motion is driven entirely by noise. In this case, no correlation is created byween x,y and yaw and thus measuring x,y says nothing about yaw and it will not be estimated.
