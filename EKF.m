@@ -2,11 +2,52 @@
 % Author Patric Jensfelt
 %
 clear
-close all
 figure(1)
+clf
 
-% Load simulation parameters
-simulation_parameters;
+displayCorrelations = 1
+
+% Sampling rate
+dT = 0.1;
+
+%% True model parameters
+% Commanded speed in vehicle frame, corresponding to moving in 
+% a circle of radius 5m
+vx = 0.5;
+vy = 0;
+yawrate = 0.1;
+
+% Process noise
+xStd = 1e-9;
+yStd = 1e-9;
+yawStd = 1e-9;
+vxStd = 0.001;
+vyStd = 0.001;
+yawrateStd = 0.001;
+
+% Measurement noise
+xMeasStd = 1;
+yMeasStd = 1;
+
+%% Filter model parameters
+% Commanded speed in vehicle frame
+vxF = 0.5;
+vyF = 0;
+yawrateF = 0.1;
+
+% Process noise
+xStdF = 1e-9;
+yStdF = 1e-9;
+yawStdF = 1e-9;
+vxStdF = 0.001;
+vyStdF = 0.001;
+yawrateStdF = 0.001;
+
+% Measurement noise
+xMeasStdF = 1;
+yMeasStdF = 1;
+
+%% Run simulation
 
 % Display handles to
 h = [];
@@ -29,30 +70,19 @@ P = P0;
 
 iter = 0;
 
-% Motion "commands" (actual commands vx,vy,yawrate and driving noise xStd,
-% yStd, yawStd)
-% By default the is commands by vx,vy,yawrate to move in a circle of radius
-% 5m
-vx = 0.5;
-vy = 0;
-yawrate = 0.1;
-xStd = 0;
-yStd = 0;
-yawStd = 0;
-
-% To experiment with what happens to the filter when the motion of the
-% robot is driven by pure noise (i.e. we hav no clue what goes on) such as
-% when someone holds it in its hands and moves it
-driveByPureNoise = 0
+% To experiment with what happens to the filter when we have no information 
+% about the motion and the input is just noise
+driveByPureNoise = 1
 if driveByPureNoise
-    vx = 0;
-    vy = 0;
-    yawrate = 0;
-    xStd = 0.5;
-    yStd = 0;
-    yawStd = 0.1;
+    vxF = 0;
+    vyF = 0;
+    yawrateF = 0;
+    xStdF = 0.1;
+    yStdF = 0.1;
+    yawStdF = 0.1;
 end
 
+run = 1
 while (run)
     
     % Noise command signals
@@ -66,19 +96,19 @@ while (run)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Predict motion x=f(x)h
-    X(1) = X(1) + vx*dT*cos(X(3)) - vy*dT*sin(X(3));
-    X(2) = X(2) + vx*dT*sin(X(3)) + vy*dT*cos(X(3));
-    X(3) = X(3) + yawrate*dT;
+    X(1) = X(1) + vxF*dT*cos(X(3)) - vyF*dT*sin(X(3));
+    X(2) = X(2) + vxF*dT*sin(X(3)) + vyF*dT*cos(X(3));
+    X(3) = X(3) + yawrateF*dT;
 
     % Jacobian of system dynamics "f(x)" w.r.t. to state variables
-    A = [ [ 1, 0, -vx*dT*sin(X(3))-vy*dT*cos(X(3))];
-          [ 0, 1, vx*dT*cos(X(3))-vy*dT*sin(X(3))];
+    A = [ [ 1, 0, -vxF*dT*sin(X(3))-vyF*dT*cos(X(3))];
+          [ 0, 1, vxF*dT*cos(X(3))-vyF*dT*sin(X(3))];
           [ 0, 0, 1] ];
 
     % Jacibian of system dynamics "f(x)" w.r.t. the noise variables with std
     % xStd, yStd, yawStd, vxStd, vyStd, yawrateStd
     W = [1 0 0 dT*cos(X(3)) -dT*sin(X(3)) 0; 0 1 0 dT*sin(X(3)) dT*cos(X(3)) 0; 0 0 1 0 0 dT];
-    Q = (diag([xStd yStd yawStd vxStd vyStd yawrateStd])).^2;
+    Q = (diag([xStdF yStdF yawStdF vxStdF vyStdF yawrateStdF])).^2;
 
     % Update state covariance matrix
     P = A*P*A' + W*Q*W';
@@ -93,7 +123,7 @@ while (run)
     % Jacobian of the measurement function "h(x)"
     H = [1 0 0; 0 1 0];
     innov = [xMeas - X(1);yMeas - X(2)];
-    R = (diag([xMeasStd yMeasStd])).^2;
+    R = (diag([xMeasStdF yMeasStdF])).^2;
 
     % Kalman filte rmeasurement update
     K = P*H'*inv(H*P*H' + R);
