@@ -11,7 +11,10 @@ if nargin < 5
     drawDirectionVector = 0;
 end
 
-global Length Width
+
+% Length and whidth of the robot
+Length = 0.5;
+Width = 0.5;
 
 X = [-0.5*Length 0.5*Length 0.5*Length -0.5*Length -0.5*Length;
     -0.5*Width -0.5*Width 0.5*Width 0.5*Width -0.5*Width];
@@ -22,5 +25,5 @@ X = R*X;
 
 h = plot(x+X(1,:),y+X(2,:),c,'LineWidth',2);
 if drawDirectionVector
-    h = [h plot([x+[0 0.5*cos(a)]],[y+[0 0.5*sin(a)]],c,'LineWidth',2)];
+    h = [h plot([x+[0 2.5*cos(a)]],[y+[0 2.5*sin(a)]],c,'LineWidth',2)];
 end
