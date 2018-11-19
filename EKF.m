@@ -72,7 +72,7 @@ iter = 0;
 
 % To experiment with what happens to the filter when we have no information 
 % about the motion and the input is just noise
-driveByPureNoise = 1
+driveByPureNoise = 0
 if driveByPureNoise
     vxF = 0;
     vyF = 0;
